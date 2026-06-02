@@ -1,0 +1,304 @@
+<!doctype html>
+<html id="ht" class="dark">
+<head>
+<title>Sacrifice Room Mechanics - Isaac Cheat Sheet - Platinum God</title>
+<meta name="description" content="In-depth explanation of how the new Sacrifice room mechanics works in The Binding of Isaac: Afterbirth">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="../assets/main.css">
+<link rel="shortcut icon" type="image/x-icon" href="../images/favico.png">
+<script>
+  // (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  // (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  // m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  // })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  // ga('create', 'UA-42133651-1', 'auto');
+  // ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<div class="overlay" id="darkback"></div>
+<header>
+	<div class="container full">
+			<div class="swapper">
+				<a class="navbar-swapper pull-left" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					<img class="border-round mrs" alt="Gungeon God" src="../images/pg-icon.png" width="30" height="30">
+					<span aria-hidden="true" style="color:#9BCD35;font-size:18px;vertical-align:middle;">▼</span>
+				</a>
+				<ul class="swapper-menu">
+					<li>
+						<a href="../index.html" class="full-w" style="color:#9BCD35;">
+							<img class="border-round mrs" src="../images/pg-icon.png" width="42" height="42" />
+							Binding of Isaac
+						</a>
+					</li>
+					<li>
+						<a href="http://gungeongod.com/" class="full-w" style="color:#F4990F;">
+							<img class="border-round mrs" src="../images/gg-icon.png" width="42" height="42" />
+							Enter the Gungeon
+						</a>
+					</li>
+				</ul>
+			</div>
+    	<div class="mobile-nav">&#9776;</div>
+        <div class="mobile-nav-container">
+					<a class="nav-item " href="../index.html">Home</a>
+					<a class="nav-item " href="all-items">All Items</a>
+					<a class="nav-item nav-dd">Original</a>
+		        <ul class="main-nav-list">
+							<li><a class="nav-item" href="original">Items</a></li>
+							<li><a class="nav-item" href="synergies">Synergies</a></li>
+		        	<li><a class="nav-item" href="calculator">Calculator</a></li>
+		        </ul>
+	        <a class="nav-item nav-dd">Rebirth</a>
+		        <ul class="rebirth-nav-list">
+							<li><a class="nav-item" href="rebirth">Items</a></li>
+		        	<li><a class="nav-item" href="rebirth-info">Info</a></li>
+		        	<li><a class="nav-item" href="rebirth-seeds">Seeds</a></li>
+	            <li><a class="nav-item" href="babies">Babies</a></li>
+		        </ul>
+					<a class="nav-item nav-dd">Afterbirth</a>
+		        <ul class="afterbirth-nav-list">
+							<li><a class="nav-item" href="afterbirth">Items</a></li>
+							<li><a class="nav-item" href="afterbirth-synergies">Synergies</a></li>
+		        	<li><a class="nav-item" href="afterbirth-info">Info</a></li>
+							<li><a class="nav-item" href="afterbirth-seeds">Seeds</a></li>
+		        </ul>
+					<a class="nav-item nav-dd">Afterbirth+</a>
+		        <ul class="afterbirthplus-nav-list">
+							<li><a class="nav-item" href="afterbirth-plus">Items</a></li>
+							<li><a class="nav-item" href="afterbirth-synergies">Synergies</a></li>
+		        	<li><a class="nav-item" href="afterbirth-plus-info">Info</a></li>
+		        </ul>
+						<a class="nav-item " href="antibirth">Antibirth</a>
+					<a class="nav-item nav-dd">Mechanics</a>
+		        <ul class="mechanics-nav-list">
+							<li><a class="nav-item" href="devil-room.html">Devil room</a></li>
+		        	<li><a class="nav-item" href="angel-room.html">Angel room</a></li>
+							<li><a class="nav-item really-close" href="transformations.html">Transformations</a></li>
+							<li><a class="nav-item " href="sacrifice-rooms.html">Sacrifice<br>Rooms</a></li>
+							<li><a class="nav-item " href="tarot-cloth.html">Tarot Cloth</a></li>
+							<li><a class="nav-item " target="_blank" href="../bag-of-crafting/index.html">Bag of<br>Crafting</a></li>
+		        </ul>
+					<a onclick="ga('send', 'event', 'Repentance', 'click', 'NavMobile');" class="nav-item " href="repentance">Repentance</a>
+        </div>
+
+			<div class="navigation">
+				<a class="nav-item nav-dd " href="../index.html">Home</a>
+					<ul class="home-nav-list">
+					<li><a class="nav-item" href="../index.html">Grouped</a></li>
+					<li><a class="nav-item" href="all-items">All items</a></li>
+	        </ul>
+				<a class="nav-item nav-dd">Original</a>
+	        <ul class="main-nav-list">
+						<li><a class="nav-item" href="original">Items</a></li>
+						<li><a class="nav-item" href="synergies">Synergies</a></li>
+	        	<li><a class="nav-item" href="calculator">Calculator</a></li>
+	        </ul>
+        <a class="nav-item nav-dd">Rebirth</a>
+	        <ul class="rebirth-nav-list">
+						<li><a class="nav-item" href="rebirth">Items</a></li>
+	        	<li><a class="nav-item" href="rebirth-info">Info</a></li>
+	        	<li><a class="nav-item" href="rebirth-seeds">Seeds</a></li>
+            <li><a class="nav-item" href="babies">Babies</a></li>
+	        </ul>
+				<a class="nav-item nav-dd">Afterbirth</a>
+					<ul class="afterbirth-nav-list">
+						<li><a class="nav-item" href="afterbirth">Items</a></li>
+						<li><a class="nav-item" href="afterbirth-synergies">Synergies</a></li>
+						<li><a class="nav-item" href="afterbirth-info">Info</a></li>
+						<li><a class="nav-item" href="afterbirth-seeds">Seeds</a></li>
+					</ul>
+				<a class="nav-item nav-dd">Afterbirth+</a>
+					<ul class="afterbirthplus-nav-list">
+						<li><a class="nav-item" href="afterbirth-plus">Items</a></li>
+						<li><a class="nav-item" href="afterbirth-synergies">Synergies</a></li>
+						<li><a class="nav-item" href="afterbirth-plus-info">Info</a></li>
+					</ul>
+					<a class="nav-item " href="antibirth">Antibirth</a>
+				<a class="nav-item nav-dd">Mechanics</a>
+	        <ul class="mechanics-nav-list">
+						<li><a class="nav-item" href="devil-room.html">Devil room</a></li>
+	        	<li><a class="nav-item" href="angel-room.html">Angel room</a></li>
+						<li><a class="nav-item " href="transformations.html">Transformations</a></li>
+						<li><a class="nav-item " href="sacrifice-rooms.html">Sacrifice Rooms</a></li>
+						<li><a class="nav-item " href="tarot-cloth.html">Tarot Cloth</a></li>
+						<li><a class="nav-item " target="_blank" href="../bag-of-crafting/index.html">Bag of Crafting</a></li>
+	        </ul>
+					<a onclick="ga('send', 'event', 'Repentance', 'click', 'NavDesktop');" class="nav-item " href="repentance">Repentance</a>
+			</div>
+
+      <div class="search">
+      	      </div>
+	</div>
+</header>
+<div class="generic sac">
+
+<h1>Sacrifice Rooms</h1>
+
+<p>Historically, Sacrifice Rooms have always been pretty darn useless in The Binding of Isaac, but lucky owners of the Afterbirth DLC will find they've had a huge revamp, significantly increasing the quality of rewards you can find.</p>
+
+<p>The Sacrifice Room now has various different levels of rewards, depending on the amount of times used on the same floor. The below table details each level of payout and the reward for reaching each tier:</p>
+
+<table>
+  <thead>
+    <tr>
+      <td>Number of Sacrifices</td>
+      <td>Possible Payouts</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1st, 2nd</td>
+      <td>
+        <ul>
+          <li>1 Coin (50% chance) - Cannot be Nickels or Dimes</li>
+          <li>Nothing (50% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>3rd</td>
+      <td>
+        <ul>
+          <li>Nothing (33% chance)</li>
+          <li>'You feel blessed!' buff (66% chance) - Increased chance to see an Angel Room in favour of a Devil Room on the current floor</li>
+          <li class="pll">- This increased chance has a value of 15% * (Devil Room chance).</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>4th</td>
+      <td>
+        <ul>
+          <li>1 Random Chest (50% chance)</li>
+          <li>Nothing (50% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>5th</td>
+      <td>
+        <ul>
+          <li>3 Coins (33% chance) - Cannot be Nickels or Dimes</li>
+          <li>'You feel blessed!' buff (66% chance) - Increased chance to see an Angel Room in favour of a Devil Room on the current floor.</li>
+          <li class="pll">- This increased chance has a value of 50% * (Devil Room chance).</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>6th</td>
+      <td>
+        <ul>
+          <li>Teleport to the Devil or Angel Room (33% chance)</li>
+          <li>1 Random Chest (66% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>7th</td>
+      <td>
+        <ul>
+          <li>1 Random Angel Room Item (33% chance)</li>
+          <li>1 Soul Heart (66% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>8th</td>
+      <td>
+        <ul>
+          <li>6 Troll Bombs (100% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>9th</td>
+      <td>
+        <ul>
+          <li>Uriel Angel mini-boss spawns (100% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>10th</td>
+      <td>
+        <ul>
+          <li>7 Soul hearts (50% chance)</li>
+          <li>30 Coins (50% chance) - Cannot be Nickels or Dimes</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>11th</td>
+      <td>
+        <ul>
+          <li>Gabriel Angel mini-boss spawns (100% chance)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>12th+</td>
+      <td>
+        <ul>
+          <li>Teleport directly to the Dark Room floor (50% chance)</li>
+          <li>Nothing (50% chance)</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>A big thank you to <a target="_blank" href="http://www.twitch.tv/zamiell">Zamie</a> who did the research and added the above stats to the <a href="http://bindingofisaacrebirth.gamepedia.com/Sacrifice_Room">Sacrifice Room Wiki page</a>.</strong></p>
+
+<h2>Notes:</h2>
+<ul>
+  <li>The 'You feel blessed!' buffs can even allow an Angel Room to spawn after taking a Devil Deal.</li>
+  <li>A payout is randomly chosen from each of the possible ones for that sacrifice.</li>
+  <li>The sacrifice room door stays open during the Angel fights, meaning they can be skipped to proceed to the next level of sacrificing without killing them.</li>
+  <li>The Dark Room teleport still happens on any floor even if you haven't unlocked it yet.</li>
+  <li>Dying in a sacrifice room while holding Missing Poster will unlock The Lost.</li>
+  <li>Invincibility and shields will not trigger a sacrifice (including Holy Mantle).</li>
+</ul>
+
+
+
+
+</div>
+
+<footer>
+    <div class="links">
+        <ul>
+            <li>Useful Links</li>
+            <li><a target="_blank" href="faq">FAQ / Help</a></li>
+            <li><a target="_blank"
+                    href="http://bindingofisaacrebirth.gamepedia.com/Binding_of_Isaac:_Rebirth_Wiki">Rebirth Wiki</a>
+            </li>
+            <li><a target="_blank" href="/privacy-policy">Privacy Policy</a></li>
+            <li><a target="_blank" href="/changelog">Changelog</a></li>
+            <li><a target="_blank" href="http://gungeongod.com">GungeonGod.com</a></li>
+        </ul>
+    </div>
+    <div class="social">
+        <ul>
+            <li>
+                <img width="50" height="50" src="../images/email.png" alt="Email me">
+                <a href="mailto:isaaccheatsheet@gmail.com">isaaccheatsheet@gmail.com</a>
+            </li>
+        </ul>
+    </div>
+    <div class="pg">
+        <img id="pg-img" width="298" height="336" src="../images/elucidate.png" alt="Platinum God" onclick="rndSound()">
+        <audio class="audio" id="footersound" src=""></audio>
+    </div>
+</footer>
+
+<script src="../assets/vendor/jquery-1.10.1.min.js"></script>
+<script src="../assets/vendor/jquery.easing.min.js"></script>
+<script src="../assets/vendor/jquery.tinysort.min.js"></script>
+<script src="../assets/vendor/underscore-min.js"></script>
+<script src="../assets/scripts/main.js"></script>
+</body>
+
+</html>
