@@ -8,6 +8,16 @@
     collectible: Object.create(null),
     trinket: Object.create(null)
   };
+  var titleMatchers = [
+    {
+      family: "collectible",
+      pattern: /^(?:r-itm|a-itm|ap-itm|re-itm|abn-itm|apn-itm|bpn-itm|rep)(\d+)$/
+    },
+    {
+      family: "trinket",
+      pattern: /^rep-junxx(\d+)$/
+    }
+  ];
 
   payload.entries.forEach(function (entry) {
     if (!entry || !entry.family || !entry.sid || !entry.title) {
@@ -25,14 +35,12 @@
     var classes = className.split(/\s+/);
     for (var i = 0; i < classes.length; i += 1) {
       var token = classes[i];
-      var collectibleMatch = token.match(/^(?:r-itm|a-itm|ap-itm|re-itm|abn-itm|apn-itm|bpn-itm|rep)(\d+)$/);
-      if (collectibleMatch) {
-        return localizedByFamily.collectible[collectibleMatch[1]] || "";
-      }
-
-      var trinketMatch = token.match(/^rep-junxx(\d+)$/);
-      if (trinketMatch) {
-        return localizedByFamily.trinket[trinketMatch[1]] || "";
+      for (var j = 0; j < titleMatchers.length; j += 1) {
+        var matcher = titleMatchers[j];
+        var match = token.match(matcher.pattern);
+        if (match) {
+          return localizedByFamily[matcher.family][match[1]] || "";
+        }
       }
     }
 

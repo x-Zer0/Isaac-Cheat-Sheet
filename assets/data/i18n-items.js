@@ -1,5 +1,5 @@
 window.__ITEM_I18N__ = {
-  "generatedAt": "2026-06-02T11:50:24.089Z",
+  "generatedAt": "2026-06-02T13:17:59.018Z",
   "defaultLocale": "zh-CN",
   "entries": [
     {

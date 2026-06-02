@@ -57,6 +57,30 @@ function getEntryKey($node) {
     return [family, sid, tid, variant].join(":");
 }
 
+var ITEM_SELECTOR = ".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item";
+var META_VALUE_TRANSLATIONS = {
+    "Active": "\u4e3b\u52a8\u9053\u5177",
+    "Passive": "\u88ab\u52a8\u9053\u5177",
+    "Passive, Tear Modifier": "\u88ab\u52a8\u9053\u5177, \u6cea\u5f39\u4fee\u6b63",
+    "Varies": "\u53ef\u53d8",
+    "Instant": "\u77ac\u65f6",
+    "Secret Room": "\u9690\u85cf\u623f",
+    "Crane Game": "\u6293\u5a03\u5a03\u673a",
+    "Item Room": "\u9053\u5177\u623f",
+    "Greed Mode Item Room": "\u8d2a\u5a6a\u6a21\u5f0f\u9053\u5177\u623f",
+    "Devil Room": "\u6076\u9b54\u623f",
+    "Angel Room": "\u5929\u4f7f\u623f",
+    "Shop": "\u5546\u5e97",
+    "Golden Chest": "\u91d1\u7bb1\u5b50",
+    "Mom's Chest": "\u5988\u5988\u7bb1\u5b50",
+    "Old Chest": "\u65e7\u7bb1\u5b50"
+};
+var SPECIAL_POPUP_LINKS = {
+    "278": "<a id=\"DankBumLink\" href=\"dark-bum\"></a>",
+    "331": "<a id=\"IlluminatiLink\" href=\"109\"></a>",
+    "429": "<a id=\"ButtLink\" href=\"ultra-butt\"></a>"
+};
+
 function escapeHtml(value) {
     return $("<div>").text(value == null ? "" : String(value)).html();
 }
@@ -66,31 +90,21 @@ function localizeMetaValue(value, localeCode) {
         return value;
     }
 
-    var replacements = {
-        "Active": "\u4e3b\u52a8\u9053\u5177",
-        "Passive": "\u88ab\u52a8\u9053\u5177",
-        "Passive, Tear Modifier": "\u88ab\u52a8\u9053\u5177, \u6cea\u5f39\u4fee\u6b63",
-        "Varies": "\u53ef\u53d8",
-        "Instant": "\u77ac\u65f6",
-        "Secret Room": "\u9690\u85cf\u623f",
-        "Crane Game": "\u6293\u5a03\u5a03\u673a",
-        "Item Room": "\u9053\u5177\u623f",
-        "Greed Mode Item Room": "\u8d2a\u5a6a\u6a21\u5f0f\u9053\u5177\u623f",
-        "Devil Room": "\u6076\u9b54\u623f",
-        "Angel Room": "\u5929\u4f7f\u623f",
-        "Shop": "\u5546\u5e97",
-        "Golden Chest": "\u91d1\u7bb1\u5b50",
-        "Mom's Chest": "\u5988\u5988\u7bb1\u5b50",
-        "Old Chest": "\u65e7\u7bb1\u5b50"
-    };
-
     if ($.isArray(value)) {
         return $.map(value, function (entry) {
-            return replacements[entry] || entry;
+            return META_VALUE_TRANSLATIONS[entry] || entry;
         });
     }
 
-    return replacements[value] || value;
+    return META_VALUE_TRANSLATIONS[value] || value;
+}
+
+function buildMetaParagraph(label, value, localeCode) {
+    var normalizedValue = localizeMetaValue(value, localeCode);
+    if ($.isArray(normalizedValue)) {
+        normalizedValue = normalizedValue.join(", ");
+    }
+    return "<p>" + escapeHtml(label) + ": " + escapeHtml(normalizedValue) + "</p>";
 }
 
 function renderMetaParagraphs(meta, localeCode) {
@@ -104,20 +118,20 @@ function renderMetaParagraphs(meta, localeCode) {
     var poolLabel = localeCode === "zh-CN" ? "\u9053\u5177\u6c60" : "Item Pool";
 
     if (meta.type) {
-        parts.push("<p>" + typeLabel + ": " + escapeHtml(localizeMetaValue(meta.type, localeCode)) + "</p>");
+        parts.push(buildMetaParagraph(typeLabel, meta.type, localeCode));
     }
     if (meta["recharge time"]) {
-        parts.push("<p>" + rechargeLabel + ": " + escapeHtml(localizeMetaValue(meta["recharge time"], localeCode)) + "</p>");
+        parts.push(buildMetaParagraph(rechargeLabel, meta["recharge time"], localeCode));
     }
     if (meta.itemPools && meta.itemPools.length) {
-        parts.push("<p>" + poolLabel + ": " + escapeHtml(localizeMetaValue(meta.itemPools, localeCode).join(", ")) + "</p>");
+        parts.push(buildMetaParagraph(poolLabel, meta.itemPools, localeCode));
     }
 
     $.each(meta, function (key, value) {
         if (key === "type" || key === "recharge time" || key === "itemPools") {
             return;
         }
-        parts.push("<p>" + escapeHtml(key) + ": " + escapeHtml(localizeMetaValue(value, localeCode)) + "</p>");
+        parts.push(buildMetaParagraph(key, value, localeCode));
     });
 
     return parts.join("");
@@ -187,21 +201,17 @@ function loadAndApplyLocale(localeCode) {
     return $.Deferred().resolve().promise();
 }
 
+function buildPopupMarkup(markup, id) {
+    return markup + (SPECIAL_POPUP_LINKS[String(id)] || "");
+}
+
 function findItemFromID(id) {
     var val = id.toString();
     var node = $("body").find("[data-sid='" + val + "']");
     if (node.html() === undefined) {
         return "<p>Invalid item ID!</p>";
     }
-    if (val == "278") {
-        return node.html() + "<a id=\"DankBumLink\" href=\"dark-bum\"></a>";
-    } else if (val == "331") {
-        return node.html() + "<a id=\"IlluminatiLink\" href=\"109\"></a>";
-    } else if (val == "429") {
-        return node.html() + "<a id=\"ButtLink\" href=\"ultra-butt\"></a>";
-    } else {
-        return node.html();
-    }
+    return buildPopupMarkup(node.html(), val);
 }
 
 function closepp() {
@@ -307,11 +317,11 @@ $(document).ready(function () {
 
         $("input[name=size]").click(function () {
             if ($("#small").is(":checked")) {
-                $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item")
+                $(ITEM_SELECTOR)
                     .removeClass("large")
                     .addClass("small");
             } else if ($("#medium").is(":checked")) {
-                $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item")
+                $(ITEM_SELECTOR)
                     .removeClass("small")
                     .removeClass("large");
             }
@@ -329,9 +339,9 @@ $(document).ready(function () {
 
         $("input[name=spacing]").click(function () {
             if ($("#closer").is(":checked")) {
-                $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item").addClass("closer");
+                $(ITEM_SELECTOR).addClass("closer");
             } else if ($("#spaced").is(":checked")) {
-                $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item").removeClass("closer");
+                $(ITEM_SELECTOR).removeClass("closer");
             }
         });
 
@@ -343,17 +353,7 @@ $(document).ready(function () {
 
         $(".textbox").click(function () {
             var val = $(this).data("sid");
-            var markup = "";
-
-            if (val == 278) {
-                markup = $(this).children().html() + "<a id=\"DankBumLink\" href=\"dark-bum\"></a>";
-            } else if (val == 331) {
-                markup = $(this).children().html() + "<a id=\"IlluminatiLink\" href=\"109\"></a>";
-            } else if (val == 429) {
-                markup = $(this).children().html() + "<a id=\"ButtLink\" href=\"ultra-butt\"></a>";
-            } else {
-                markup = $(this).children().html();
-            }
+            var markup = buildPopupMarkup($(this).children().html(), val);
 
             markup += "<a class=\"pp-close\" onclick=\"closepp()\">x</a>";
             var node = document.getElementById("popup");
@@ -362,13 +362,13 @@ $(document).ready(function () {
             $(".overlay").fadeIn();
         });
 
-        var tempitm = $(".items-container .textbox").size();
+        var tempitm = $(".items-container .textbox").length;
         $(".r-item-ttl").html("(" + tempitm + ")");
-        var temptrink = $(".trinkets-container .textbox").size();
+        var temptrink = $(".trinkets-container .textbox").length;
         $(".r-trink-ttl").html("(" + temptrink + ")");
-        var tempcard = $(".tarot-container .textbox").size();
+        var tempcard = $(".tarot-container .textbox").length;
         $(".r-card-ttl").html("(" + tempcard + ")");
-        var tempseed = $(".seeds table tr").size();
+        var tempseed = $(".seeds table tr").length;
         $(".seeds .seed-ttl").html("(" + tempseed + ")");
 
         $(".seeds-hide-img").click(function () {
@@ -453,7 +453,7 @@ function cCo() {
     var x = document.getElementById("medium");
     if (z == "s") {
         if (y && x) {
-            $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item")
+            $(ITEM_SELECTOR)
                 .removeClass("large")
                 .addClass("small");
             y.checked = true;
@@ -461,7 +461,7 @@ function cCo() {
         }
     } else {
         if (y && x) {
-            $(".item, .rebirth-item, .rep-item, .rebirth-trinket, .rebirth-card, .a-item, .ap-item, .anb-item")
+            $(ITEM_SELECTOR)
                 .removeClass("small")
                 .removeClass("large");
             y.checked = false;
