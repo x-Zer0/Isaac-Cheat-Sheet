@@ -291,51 +291,6 @@ $(document).mouseup(function (e) {
     }
 }); // end document .mouseup
 
-function rndSound() {
-    var sounds = ['sounds/1up.mp3',
-        'sounds/battery.mp3',
-        'sounds/chest.mp3',
-        'sounds/death.mp3',
-        'sounds/derp.mp3',
-        'sounds/devildeal.mp3',
-        'sounds/dime.mp3',
-        'sounds/eternal.mp3',
-        'sounds/fart.mp3',
-        'sounds/goldkey.mp3',
-        'sounds/holy.mp3',
-        'sounds/miniboss.mp3',
-        'sounds/mom.mp3',
-        'sounds/powerup.mp3',
-        'sounds/slot.mp3',
-        'sounds/stan.mp3'
-    ];
-
-    var images = ['images/elucidate.png',
-        'images/elucidate2.png',
-        'images/elucidate3.png',
-        'images/elucidate4.png',
-        'images/elucidate5.png',
-        'images/elucidate6.png',
-        'images/elucidate7.png',
-        'images/elucidate8.png',
-        'images/elucidate9.png',
-        'images/elucidate10.png',
-    ];
-
-    var randomSound = Math.floor(Math.random() * sounds.length);
-    var randomImage = Math.floor(Math.random() * images.length);
-
-    var audioElement = document.getElementById('footersound');
-    var imageElement = document.getElementById('pg-img');
-
-    audioElement.setAttribute('src', sounds[randomSound]);
-    audioElement.play();
-
-    imageElement.setAttribute('src', images[randomImage]);
-
-}
-
-
 function cCo() {
     var ta = gC("sort");
     var id = document.getElementById("itemid");
