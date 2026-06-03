@@ -6,6 +6,7 @@
 <meta name="description" content="Binding of Isaac Rebirth Cheat Sheet wiki. Hover over any item to see detailed and accurate descriptions taken directly from the game's source code.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="stylesheet" type="text/css" href="assets/main.css">
+<link rel="stylesheet" type="text/css" href="assets/item-filters.css">
 <style>
 header .container .navigation { position: relative; }
 header .container .navigation ul.mechanics-nav-list { left: 100px; }
@@ -75,9 +76,50 @@ header .container .mobile-nav-container ul.mechanics-nav-list { top: 50px; }
 			</div>
 
       <div class="search">
-      	      	<form action="#">
+       	     	<form action="#">
         	<input class="search-input" type="text" autocomplete="off" placeholder="Search anything!" autofocus>
           </form>
+
+          <div class="item-filter-popover">
+          	<button type="button" class="item-filter-trigger">筛选</button>
+          	<div class="item-filter-panel">
+          		<div class="item-filter-panel__header">
+          			<div>
+          				<h2>道具筛选</h2>
+          				<p class="item-filter-panel__hint">支持分类、类型、道具池和标签关键词组合筛选。</p>
+          			</div>
+          			<button type="button" class="item-filter-reset">清空全部条件</button>
+          		</div>
+          		<div class="item-filter-grid">
+          			<label class="item-filter-field" for="filter-family">
+          				<span>分类</span>
+          				<select id="filter-family">
+          					<option value="">全部分类</option>
+          				</select>
+          			</label>
+          			<label class="item-filter-field" for="filter-type">
+          				<span>类型</span>
+          				<select id="filter-type">
+          					<option value="">全部类型</option>
+          				</select>
+          			</label>
+          			<label class="item-filter-field" for="filter-pool">
+          				<span>道具池</span>
+          				<select id="filter-pool">
+          					<option value="">全部道具池</option>
+          				</select>
+          			</label>
+          			<label class="item-filter-field item-filter-field--wide" for="filter-tag">
+          				<span>标签关键词</span>
+          				<input id="filter-tag" type="text" autocomplete="off" placeholder="例如：devil deal、treasure room、bomb">
+          			</label>
+          		</div>
+          		<div class="item-filter-summary">
+          			<p id="item-filter-result">正在加载筛选器...</p>
+          			<p id="item-filter-active">当前未启用额外筛选条件</p>
+          		</div>
+          	</div>
+          </div>
 
           <div class="option-expander"></div>
           <div class="option-container">

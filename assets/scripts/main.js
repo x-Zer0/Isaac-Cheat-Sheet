@@ -18,15 +18,13 @@ function gC(e) {
 }
 
 function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) {
-            return pair[1];
-        }
+    var params = new URLSearchParams(window.location.search);
+    if (!params.has(variable)) {
+        return false;
     }
-    return false;
+
+    var value = $.trim(params.get(variable) || "");
+    return value ? value : false;
 }
 
 function getEntryVariant($node) {
@@ -205,11 +203,352 @@ function buildPopupMarkup(markup, id) {
     return markup + (SPECIAL_POPUP_LINKS[String(id)] || "");
 }
 
+function normalizeLookupValue(value) {
+    return $.trim(String(value == null ? "" : value)).replace(/\s+/g, " ").toLowerCase();
+}
+
+function uniqueValues(values) {
+    var seen = {};
+    var result = [];
+
+    $.each(values, function (_, value) {
+        if (!value || seen[value]) {
+            return;
+        }
+        seen[value] = true;
+        result.push(value);
+    });
+
+    return result;
+}
+
+function getFamilyDisplayLabel(family, localeCode) {
+    var labels = {
+        collectible: localeCode === "zh-CN" ? "道具" : "Items",
+        trinket: localeCode === "zh-CN" ? "饰品" : "Trinkets",
+        card: localeCode === "zh-CN" ? "卡牌 / 符文" : "Cards / Runes"
+    };
+
+    return labels[family] || family;
+}
+
+function getFilterOptionDisplay(value, localeCode) {
+    var localized = localizeMetaValue(value, localeCode);
+
+    if ($.isArray(localized)) {
+        return localized.join(", ");
+    }
+
+    return localized;
+}
+
+function getCanonicalMetaOptionValue(value, group) {
+    var normalized = normalizeLookupValue(value);
+    var aliases = {
+        type: {
+            "passive, tear modifier": "Passive, Tear Modifier"
+        },
+        pool: {
+            "item room": "Item Room",
+            "greed mode item room": "Greed Mode Item Room",
+            "none (blood donation machine only)": "None (Blood Donation machine only)"
+        }
+    };
+
+    return aliases[group] && aliases[group][normalized] ? aliases[group][normalized] : value;
+}
+
+function getSimplifiedTypeKey(value) {
+    var normalized = normalizeLookupValue(value);
+
+    if (normalized.indexOf("主动") !== -1 || normalized.indexOf("active") !== -1) {
+        return "active";
+    }
+    if (normalized.indexOf("被动") !== -1 || normalized.indexOf("passive") !== -1) {
+        return "passive";
+    }
+
+    return "";
+}
+
+function populateFilterSelect($select, defaultLabel, options) {
+    $select.empty();
+    $select.append($("<option>").val("").text(defaultLabel));
+
+    $.each(options, function (_, option) {
+        $select.append($("<option>").val(option.value).text(option.label));
+    });
+}
+
+function buildItemFilterController(localePayload, localeCode) {
+    if (!localePayload || !localePayload.entries || !localePayload.locales || !localePayload.locales[localeCode]) {
+        return null;
+    }
+
+    var $panel = $(".item-filter-panel");
+    if (!$panel.length) {
+        return null;
+    }
+
+    var $family = $("#filter-family");
+    var $type = $("#filter-type");
+    var $pool = $("#filter-pool");
+    var $tag = $("#filter-tag");
+    var $search = $(".search-input");
+    var $result = $("#item-filter-result");
+    var $active = $("#item-filter-active");
+    var $reset = $(".item-filter-reset");
+    var baseMap = {};
+    var localeMap = localePayload.locales[localeCode] || {};
+    var records = [];
+    var familyOptions = [];
+    var poolOptionsByKey = {};
+    var familyOrder = {
+        collectible: 1,
+        trinket: 2,
+        card: 3
+    };
+    var allowedPoolLabels = {
+        "商店": true,
+        "天使房": true,
+        "妈妈箱子": true,
+        "恶魔房": true,
+        "抓娃娃机": true,
+        "旧箱子": true,
+        "贪婪模式道具房": true,
+        "道具房": true,
+        "金箱子": true,
+        "隐藏房": true
+    };
+
+    $.each(localePayload.entries, function (_, entry) {
+        baseMap[entry.entryKey] = entry;
+    });
+
+    $(".textbox").each(function () {
+        var $node = $(this);
+        var entryKey = $node.attr("data-entry-key") || getEntryKey($node);
+        var baseEntry = baseMap[entryKey];
+        var localeEntry = localeMap[entryKey] || baseEntry;
+        var meta = (localeEntry && localeEntry.meta) || (baseEntry && baseEntry.meta) || {};
+        var typeRaw = meta.type || "";
+        var typeCanonical = getCanonicalMetaOptionValue(typeRaw, "type");
+        var typeDisplay = typeCanonical ? getFilterOptionDisplay(typeCanonical, localeCode) : "";
+        var typeKey = getSimplifiedTypeKey(typeDisplay || typeCanonical || typeRaw);
+        var itemPools = $.isArray(meta.itemPools) ? meta.itemPools : [];
+        var poolKeys = [];
+        var poolLabels = [];
+        var tagValues = uniqueValues([].concat(baseEntry && baseEntry.tags || [], localeEntry && localeEntry.tags || []));
+        var searchAliases = uniqueValues([].concat(baseEntry && baseEntry.searchAliases || [], localeEntry && localeEntry.searchAliases || []));
+
+        if (!baseEntry) {
+            return;
+        }
+
+        $.each(itemPools, function (_, pool) {
+            var poolCanonical = getCanonicalMetaOptionValue(pool, "pool");
+            var poolDisplay = getFilterOptionDisplay(poolCanonical, localeCode);
+            var poolKey = normalizeLookupValue(poolDisplay || poolCanonical || pool);
+            if (!poolKey) {
+                return;
+            }
+
+            poolKeys.push(poolKey);
+            poolLabels.push(poolDisplay || pool);
+            if (allowedPoolLabels[poolDisplay] && !poolOptionsByKey[poolKey]) {
+                poolOptionsByKey[poolKey] = poolDisplay || pool;
+            }
+        });
+
+        if (baseEntry.family) {
+            familyOptions.push(baseEntry.family);
+        }
+
+        records.push({
+            $node: $node,
+            family: baseEntry.family || getEntryFamily($node),
+            typeKey: typeKey,
+            poolKeys: uniqueValues(poolKeys),
+            quality: String(baseEntry.quality || ""),
+            tagsText: normalizeLookupValue(tagValues.join(" ")),
+            searchText: normalizeLookupValue([
+                $node.text(),
+                baseEntry.title,
+                localeEntry && localeEntry.title,
+                baseEntry.pickup,
+                localeEntry && localeEntry.pickup,
+                $.isArray(baseEntry.body) ? baseEntry.body.join(" ") : "",
+                $.isArray(localeEntry && localeEntry.body) ? localeEntry.body.join(" ") : "",
+                baseEntry.unlock,
+                localeEntry && localeEntry.unlock,
+                searchAliases.join(" "),
+                tagValues.join(" "),
+                typeRaw,
+                poolLabels.join(" "),
+                baseEntry.itemIdLabel,
+                baseEntry.itemIdValue
+            ].join(" "))
+        });
+    });
+
+    populateFilterSelect($family, "全部分类", $.map(uniqueValues(familyOptions).sort(function (left, right) {
+        return (familyOrder[left] || 99) - (familyOrder[right] || 99);
+    }), function (family) {
+        return {
+            value: family,
+            label: getFamilyDisplayLabel(family, localeCode)
+        };
+    }));
+
+    populateFilterSelect($type, "全部类型", [
+        { value: "active", label: "主动道具" },
+        { value: "passive", label: "被动道具" }
+    ]);
+
+    populateFilterSelect($pool, "全部道具池", $.map(Object.keys(poolOptionsByKey).sort(function (left, right) {
+        return String(poolOptionsByKey[left]).localeCompare(String(poolOptionsByKey[right]));
+    }), function (key) {
+        return {
+            value: key,
+            label: poolOptionsByKey[key]
+        };
+    }));
+
+    function buildTagKeywords(value) {
+        return $.grep(normalizeLookupValue(value).split(/[\s,，]+/), function (keyword) {
+            return !!keyword;
+        });
+    }
+
+    function buildActiveDescriptions(state) {
+        var descriptions = [];
+
+        if (state.searchValue) {
+            descriptions.push("搜索: " + state.searchValue);
+        }
+        if (state.familyValue) {
+            descriptions.push("分类: " + $family.find("option:selected").text());
+        }
+        if (state.typeValue) {
+            descriptions.push("类型: " + $type.find("option:selected").text());
+        }
+        if (state.poolValue) {
+            descriptions.push("道具池: " + $pool.find("option:selected").text());
+        }
+        if (state.tagKeywords.length) {
+            descriptions.push("标签包含: " + state.tagKeywords.join(", "));
+        }
+
+        return descriptions;
+    }
+
+    function updateSectionVisibility(hasCriteria, useFade) {
+        $(".main > div").each(function () {
+            var $section = $(this);
+            var $items = $section.children(".textbox");
+
+            if (!$items.length) {
+                $section.show();
+                return;
+            }
+
+            var matchedCount = $items.filter(function () {
+                return $(this).data("filter-match") === true;
+            }).length;
+
+            if (hasCriteria && !useFade && matchedCount === 0) {
+                $section.hide();
+            } else {
+                $section.show();
+            }
+        });
+    }
+
+    function readState() {
+        return {
+            searchValue: normalizeLookupValue($search.val()),
+            familyValue: $family.val(),
+            typeValue: $type.val(),
+            poolValue: $pool.val(),
+            tagKeywords: buildTagKeywords($tag.val())
+        };
+    }
+
+    function applyFilters() {
+        var state = readState();
+        var useFade = $("#fade").is(":checked");
+        var totalCount = records.length;
+        var matchedCount = 0;
+        var activeDescriptions = buildActiveDescriptions(state);
+        var hasCriteria = activeDescriptions.length > 0;
+
+        $.each(records, function (_, record) {
+            var matches = true;
+
+            if (state.searchValue && record.searchText.indexOf(state.searchValue) === -1) {
+                matches = false;
+            }
+            if (matches && state.familyValue && record.family !== state.familyValue) {
+                matches = false;
+            }
+            if (matches && state.typeValue && record.typeKey !== state.typeValue) {
+                matches = false;
+            }
+            if (matches && state.poolValue && $.inArray(state.poolValue, record.poolKeys) === -1) {
+                matches = false;
+            }
+            if (matches && state.tagKeywords.length) {
+                $.each(state.tagKeywords, function (_, keyword) {
+                    if (record.tagsText.indexOf(keyword) === -1) {
+                        matches = false;
+                        return false;
+                    }
+                });
+            }
+
+            record.$node.data("filter-match", matches);
+
+            if (matches) {
+                matchedCount += 1;
+                record.$node.show().removeClass("fade");
+            } else if (useFade) {
+                record.$node.show().addClass("fade");
+            } else {
+                record.$node.hide().removeClass("fade");
+            }
+        });
+
+        updateSectionVisibility(hasCriteria, useFade);
+
+        if (hasCriteria) {
+            $result.text("匹配 " + matchedCount + " / " + totalCount + " 个条目");
+            $active.text("当前条件: " + activeDescriptions.join(" · "));
+        } else {
+            $result.text("显示全部 " + totalCount + " 个条目");
+            $active.text("当前未启用额外筛选条件");
+        }
+
+    }
+
+    $reset.on("click", function () {
+        $family.val("");
+        $type.val("");
+        $pool.val("");
+        $tag.val("");
+        $search.val("").removeClass("x onX");
+        applyFilters();
+    });
+
+    return {
+        applyFilters: applyFilters
+    };
+}
+
 function findItemFromID(id) {
     var val = id.toString();
     var node = $("body").find("[data-sid='" + val + "']");
     if (node.html() === undefined) {
-        return "<p>Invalid item ID!</p>";
+        return "";
     }
     return buildPopupMarkup(node.html(), val);
 }
@@ -222,9 +561,15 @@ function closepp() {
 }
 
 function initpp() {
+    closepp();
+
     var chk = getQueryVariable("id");
-    if (chk !== false) {
+    if (chk !== false && /^\d+$/.test(chk)) {
         var markup = findItemFromID(chk);
+        if (!markup) {
+            return;
+        }
+
         markup += "<a class=\"pp-close\" onclick=\"closepp()\">x</a>";
         var node = document.getElementById("popup");
         node.innerHTML = markup;
@@ -238,6 +583,7 @@ $(document).ready(function () {
         initpp();
 
         var bounceRate = $(window).width() > 1000 ? 250 : 500;
+        var itemFilterController = buildItemFilterController(window.__ITEM_I18N__, "zh-CN");
         $.ajaxSetup({
             cache: false
         });
@@ -255,19 +601,23 @@ $(document).ready(function () {
             });
 
             $(input).change(_.debounce(function () {
-                var filter = $(this).val();
-                if (filter) {
-                    var $matches = $(list).find("a:Contains(" + filter.trim() + ")").parent();
-                    if ($("#remove").is(":checked")) {
-                        $("li", list).not($matches).hide();
-                    } else if ($("#fade").is(":checked")) {
-                        $("li", list).not($matches).addClass("fade");
-                    }
-                    $matches.show();
-                    $matches.removeClass("fade");
+                if (itemFilterController) {
+                    itemFilterController.applyFilters();
                 } else {
-                    $(list).find("li").show();
-                    $(list).find("li").removeClass("fade");
+                    var filter = $(this).val();
+                    if (filter) {
+                        var $matches = $(list).find("a:Contains(" + filter.trim() + ")").parent();
+                        if ($("#remove").is(":checked")) {
+                            $("li", list).not($matches).hide();
+                        } else if ($("#fade").is(":checked")) {
+                            $("li", list).not($matches).addClass("fade");
+                        }
+                        $matches.show();
+                        $matches.removeClass("fade");
+                    } else {
+                        $(list).find("li").show();
+                        $(list).find("li").removeClass("fade");
+                    }
                 }
                 return false;
             }, bounceRate)).keyup(function () {
@@ -295,9 +645,25 @@ $(document).ready(function () {
             $(this)[tog(this.offsetWidth - 30 < e.clientX - this.getBoundingClientRect().left)]("onX");
         }).on("click", ".onX", function () {
             $(this).removeClass("x onX").val("");
-            $(".main").find("li").fadeIn("fast");
-            $(".main").find("li").removeClass("fade");
+            if (itemFilterController) {
+                itemFilterController.applyFilters();
+            } else {
+                $(".main").find("li").fadeIn("fast");
+                $(".main").find("li").removeClass("fade");
+            }
         });
+
+        $("#filter-family, #filter-type, #filter-pool").on("change", function () {
+            if (itemFilterController) {
+                itemFilterController.applyFilters();
+            }
+        });
+
+        $("#filter-tag").on("input", _.debounce(function () {
+            if (itemFilterController) {
+                itemFilterController.applyFilters();
+            }
+        }, bounceRate));
 
         $(".option-expander").click(function () {
             if ($(".option-container").css("display") == "block") {
@@ -305,6 +671,11 @@ $(document).ready(function () {
             } else {
                 $(".option-container").slideDown(200, "easeOutElastic");
             }
+        });
+
+        $(".item-filter-trigger").click(function () {
+            var $popover = $(".item-filter-popover");
+            $popover.toggleClass("is-open");
         });
 
         $(".mobile-nav").click(function () {
@@ -345,6 +716,12 @@ $(document).ready(function () {
             }
         });
 
+        $("input[name=filter]").click(function () {
+            if (itemFilterController) {
+                itemFilterController.applyFilters();
+            }
+        });
+
         $(".nav-dd").hover(function () {
             $(this).next("ul").addClass("shown");
         }, function () {
@@ -374,6 +751,10 @@ $(document).ready(function () {
         $(".seeds-hide-img").click(function () {
             $(".seeds table img").toggle();
         });
+
+        if (itemFilterController) {
+            itemFilterController.applyFilters();
+        }
     });
 });
 
@@ -381,6 +762,7 @@ $(document).mouseup(function (e) {
     var container = $(".option-container");
     var mobile_nav = $(".mobile-nav-container");
     var popit = $(".itm-popup");
+    var filterPopover = $(".item-filter-popover");
     if (!container.is(e.target) && container.has(e.target).length === 0) {
         container.slideUp(600, "easeOutElastic");
     }
@@ -390,6 +772,9 @@ $(document).mouseup(function (e) {
     if (!popit.is(e.target) && popit.has(e.target).length === 0) {
         popit.fadeOut();
         $(".overlay").fadeOut();
+    }
+    if (!filterPopover.is(e.target) && filterPopover.has(e.target).length === 0) {
+        filterPopover.removeClass("is-open");
     }
 });
 
