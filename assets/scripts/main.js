@@ -443,7 +443,7 @@ function buildItemFilterController(localePayload, localeCode) {
     }
 
     function updateSectionVisibility(hasCriteria, useFade) {
-        $(".main > div").each(function () {
+        $(".main > div").not(".itm-popup").each(function () {
             var $section = $(this);
             var $items = $section.children(".textbox");
 
