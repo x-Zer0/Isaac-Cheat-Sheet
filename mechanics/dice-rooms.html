@@ -1,0 +1,200 @@
+<!doctype html>
+<html id="ht" class="dark">
+<head>
+<meta charset="utf-8">
+<title>骰子房机制 - 以撒物品查询</title>
+<meta name="description" content="骰子房的房间说明、生成特点，以及 1 到 6 点骰面对应的触发效果。">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="../assets/main.css">
+<style>
+header .container .navigation { position: relative; }
+header .container .navigation ul.mechanics-nav-list { left: 100px; }
+header .container .mobile-nav-container ul.mechanics-nav-list { top: 50px; }
+header .container .swapper.home-brand { width: 170px; }
+header .container .swapper.home-brand:hover { background-color: transparent; }
+header .container .swapper.home-brand .navbar-swapper { cursor: default; }
+header .container .swapper.home-brand .brand-label { color: #9BCD35; font-size: 18px; vertical-align: middle; }
+table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+table td, table th { border: 1px solid #908b80; padding: 12px; vertical-align: top; }
+table thead td { background: #343434; color: #f2ecde; font-weight: bold; }
+.dice-face { display: inline-block; min-width: 42px; padding: 4px 10px; background: #343434; color: #f2ecde; text-align: center; border-radius: 16px; }
+.note-box { background: rgba(52, 52, 52, 0.08); border-left: 4px solid #9BCD35; padding: 12px 16px; margin: 20px 0; }
+@media only screen and (max-width: 500px) {
+header .container .swapper.home-brand { width: 58px; }
+header .container .swapper.home-brand .brand-label { display: none; }
+table td, table th { padding: 10px; }
+}
+</style>
+<link rel="shortcut icon" type="image/x-icon" href="../images/favico.png">
+<script>
+  // (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  // (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  // m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  // })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  // ga('create', 'UA-42133651-1', 'auto');
+  // ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+<div class="overlay" id="darkback"></div>
+<header>
+	<div class="container full">
+			<div class="swapper home-brand">
+				<div class="navbar-swapper pull-left">
+					<img class="border-round mrs" alt="以撒的结合" src="../images/pg-icon.png" width="30" height="30">
+					<span class="brand-label">&#20197;&#25746;&#30340;&#32467;&#21512;</span>
+				</div>
+			</div>
+    	<div class="mobile-nav">&#9776;</div>
+        <div class="mobile-nav-container">
+					<a class="nav-item" href="../index.html">&#39318;&#39029;</a>
+					<a class="nav-item nav-dd active">&#26426;&#21046;</a>
+		        <ul class="mechanics-nav-list">
+							<li><a class="nav-item" href="devil-room.html">&#24694;&#39764;&#25151;</a></li>
+		        	<li><a class="nav-item" href="angel-room.html">&#22825;&#20351;&#25151;</a></li>
+							<li><a class="nav-item really-close" href="transformations.html">&#21464;&#36523;&#26426;&#21046;</a></li>
+							<li><a class="nav-item" href="sacrifice-rooms.html">&#29486;&#31085;&#25151;</a></li>
+							<li><a class="nav-item" href="tarot-cloth.html">&#22612;&#32599;&#24067;</a></li>
+							<li><a class="nav-item active" href="dice-rooms.html">骰子房</a></li>
+		        </ul>
+        </div>
+
+			<div class="navigation">
+				<a class="nav-item" href="../index.html">&#39318;&#39029;</a>
+				<a class="nav-item nav-dd active">&#26426;&#21046;</a>
+	        <ul class="mechanics-nav-list">
+						<li><a class="nav-item" href="devil-room.html">&#24694;&#39764;&#25151;</a></li>
+	        	<li><a class="nav-item" href="angel-room.html">&#22825;&#20351;&#25151;</a></li>
+						<li><a class="nav-item" href="transformations.html">&#21464;&#36523;&#26426;&#21046;</a></li>
+						<li><a class="nav-item" href="sacrifice-rooms.html">&#29486;&#31085;&#25151;</a></li>
+						<li><a class="nav-item" href="tarot-cloth.html">&#22612;&#32599;&#24067;</a></li>
+						<li><a class="nav-item active" href="dice-rooms.html">骰子房</a></li>
+	        </ul>
+			</div>
+
+      <div class="search">
+      	      </div>
+	</div>
+</header>
+<div class="generic">
+
+<h1>骰子房</h1>
+
+<p>骰子房是特殊房的一种，通常需要两把钥匙开启。房间中央会有一个带点数标记的地板按钮，角色踩上去并承受一次真实伤害后，就会触发与该点数对应的重掷效果。</p>
+
+<p>它的核心价值在于把某一层已经生成的资源重新洗牌。和直接使用主动道具不同，骰子房的效果是预先固定在房间里的，所以更适合在你对当前层资源分布不满意、或者想赌一次更高价值结果时使用。</p>
+
+<div class="note-box">
+  <strong>房间解释：</strong> 可以把骰子房理解成“写在地图上的一次性 D 系列骰子”。不同点数对应不同重掷逻辑，影响范围可能只是当前房间，也可能是整层。
+</div>
+
+<h2>基础说明</h2>
+<ul>
+  <li>踩下中央按钮会对角色造成 1 格伤害，然后立刻触发该房间的骰面效果。</li>
+  <li>伤害必须真实结算；无敌、护盾或类似圣衣这类不掉血状态，通常不会正常支付这次触发代价。</li>
+  <li>骰子房和献祭房不会在同一层同时出现，生成逻辑上它更像是“低概率替换掉献祭房”的特殊变体。</li>
+  <li>不同骰子房的价值差异很大，4 点和 6 点通常最值得规划使用，因为它们更容易影响到底座道具。</li>
+  <li>如果这一层里已经有很多高质量底座道具，贸然触发 4 点或 6 点有可能把它们洗成更差的结果。</li>
+</ul>
+
+<h2>点数效果</h2>
+<table>
+  <thead>
+    <tr>
+      <td>点数</td>
+      <td>对应效果</td>
+      <td>触发结果说明</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="dice-face">1 点</span></td>
+      <td>等同于 D4</td>
+      <td>重掷角色当前持有的道具。常见理解就是把你身上的 Build 重新洗牌，属于对当前角色配置影响最大的一种骰子房效果。</td>
+    </tr>
+    <tr>
+      <td><span class="dice-face">2 点</span></td>
+      <td>等同于 D20</td>
+      <td>重掷当前房间内的掉落物。硬币、钥匙、炸弹、心、宝箱、卡牌、药丸等地面掉落会被重新洗牌，但通常不会改动底座道具。</td>
+    </tr>
+    <tr>
+      <td><span class="dice-face">3 点</span></td>
+      <td>整层掉落重掷</td>
+      <td>重掷当前层所有掉落物和饰品。常见用途是把整层尚未捡起的硬币、钥匙、炸弹、心、宝箱或饰品重新刷新一遍。</td>
+    </tr>
+    <tr>
+      <td><span class="dice-face">4 点</span></td>
+      <td>等同于 D6</td>
+      <td>重掷当前层所有底座道具。只要该层已经生成但还留在地图上的道具底座，都可能被洗成同池的其他道具，是最经典也最强势的骰子房效果之一。</td>
+    </tr>
+    <tr>
+      <td><span class="dice-face">5 点</span></td>
+      <td>等同于 Forget Me Now</td>
+      <td>重置当前层。进入下一层后，本层会被重新生成并再次出现，相当于多打一遍这一层，能够再次获取房间奖励、探索资源和额外道具机会。</td>
+    </tr>
+    <tr>
+      <td><span class="dice-face">6 点</span></td>
+      <td>组合效果</td>
+      <td>同时触发 1 点、3 点、4 点的综合重掷，也就是重掷角色道具、整层掉落、整层饰品和整层底座道具，整体上接近一次强力 D100。收益和波动都非常高。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>使用建议</h2>
+<ul>
+  <li>2 点更适合在房间里堆了很多可重掷掉落时使用，例如贪婪战、乞丐奖励或大量箱子开出的资源。</li>
+  <li>4 点最好留到你已经看完本层主要道具房、商店、Boss 房奖励之后再踩，这样能最大化可重掷目标数量。</li>
+  <li>5 点在资源紧缺或想多拿一层收益时很强，但要注意它会延长流程，也可能让你重新面对这一层的风险。</li>
+  <li>6 点适合赌大收益，但如果你当前 Build 已经很好，它也可能把已经成型的道具组合洗坏。</li>
+  <li>1 点和 6 点都会直接改写你当前持有的道具，除非你愿意接受整套 Build 被重做，否则不要随便踩。</li>
+</ul>
+
+<h2>补充说明</h2>
+<ul>
+  <li>骰子房的效果会受当前层已经生成了哪些对象影响，因此同一个点数在不同楼层的价值差别会很大。</li>
+  <li>3 点和 4 点通常不会影响恶魔房、天使房、黑市、夹层这类特殊区域中的对应对象，因此它们的覆盖范围虽然大，但并不是“无条件全图生效”。</li>
+  <li>4 点和 6 点会影响整层底座道具，所以使用前通常应该先把不想失去的关键道具拿走。</li>
+  <li>5 点相当于给当前层一次“重开机会”，常被用来重复获取本层资源或寻找更好的分支路线。</li>
+  <li>如果你对重掷规则不熟，最稳妥的做法通常是优先理解 2 点、4 点、5 点，因为它们的结果最直观。</li>
+</ul>
+
+</div>
+
+<footer>
+    <div class="links">
+        <ul>
+            <li>常用链接</li>
+            <li><a target="_blank" href="faq">FAQ / 帮助</a></li>
+            <li><a target="_blank"
+                    href="http://bindingofisaacrebirth.gamepedia.com/Binding_of_Isaac:_Rebirth_Wiki">重生 Wiki</a>
+            </li>
+            <li><a target="_blank" href="/privacy-policy">隐私政策</a></li>
+            <li><a target="_blank" href="/changelog">更新日志</a></li>
+            <li><a target="_blank" href="http://gungeongod.com">GungeonGod.com</a></li>
+        </ul>
+    </div>
+    <div class="social">
+        <ul>
+            <li>
+                <img width="50" height="50" src="../images/email.png" alt="Email me">
+                <a href="mailto:isaaccheatsheet@gmail.com">isaaccheatsheet@gmail.com</a>
+            </li>
+        </ul>
+    </div>
+    <div class="pg">
+        <img id="pg-img" width="298" height="336" src="../images/elucidate.png" alt="Platinum God">
+    </div>
+</footer>
+
+<script src="../assets/vendor/jquery-1.10.1.min.js"></script>
+<script src="../assets/vendor/jquery.easing.min.js"></script>
+<script src="../assets/vendor/jquery.tinysort.min.js"></script>
+<script src="../assets/vendor/underscore-min.js"></script>
+<script src="../assets/data/i18n-items.js"></script>
+<script src="../assets/scripts/mechanics-i18n.js"></script>
+<script src="../assets/scripts/main.js?v=20260603-common-split"></script>
+</body>
+
+</html>
