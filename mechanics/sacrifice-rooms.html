@@ -10,6 +10,14 @@
 header .container .navigation { position: relative; }
 header .container .navigation ul.mechanics-nav-list { left: 100px; }
 header .container .mobile-nav-container ul.mechanics-nav-list { top: 50px; }
+header .container .swapper.home-brand { width: 170px; }
+header .container .swapper.home-brand:hover { background-color: transparent; }
+header .container .swapper.home-brand .navbar-swapper { cursor: default; }
+header .container .swapper.home-brand .brand-label { color: #9BCD35; font-size: 18px; vertical-align: middle; }
+@media only screen and (max-width: 500px) {
+header .container .swapper.home-brand { width: 58px; }
+header .container .swapper.home-brand .brand-label { display: none; }
+}
 </style>
 <link rel="shortcut icon" type="image/x-icon" href="../images/favico.png">
 <script>
@@ -27,25 +35,11 @@ header .container .mobile-nav-container ul.mechanics-nav-list { top: 50px; }
 <div class="overlay" id="darkback"></div>
 <header>
 	<div class="container full">
-			<div class="swapper">
-				<a class="navbar-swapper pull-left" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-					<img class="border-round mrs" alt="Gungeon God" src="../images/pg-icon.png" width="30" height="30">
-					<span aria-hidden="true" style="color:#9BCD35;font-size:18px;vertical-align:middle;">▼</span>
-				</a>
-				<ul class="swapper-menu">
-					<li>
-						<a href="../index.html" class="full-w" style="color:#9BCD35;">
-							<img class="border-round mrs" src="../images/pg-icon.png" width="42" height="42" />
-							&#20197;&#25746;&#30340;&#32467;&#21512;
-						</a>
-					</li>
-					<li>
-						<a href="http://gungeongod.com/" class="full-w" style="color:#F4990F;">
-							<img class="border-round mrs" src="../images/gg-icon.png" width="42" height="42" />
-							&#25354;&#36827;&#22320;&#29282;
-						</a>
-					</li>
-				</ul>
+			<div class="swapper home-brand">
+				<div class="navbar-swapper pull-left">
+					<img class="border-round mrs" alt="以撒的结合" src="../images/pg-icon.png" width="30" height="30">
+					<span class="brand-label">&#20197;&#25746;&#30340;&#32467;&#21512;</span>
+				</div>
 			</div>
     	<div class="mobile-nav">&#9776;</div>
         <div class="mobile-nav-container">
